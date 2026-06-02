@@ -6,12 +6,26 @@ const NavBar = () => {
   const [active, setActive] = useState("HOME")
   const [scrolled, setScrolled] = useState(false)
 
-  const links = ["HOME", "SERVICES", "ABOUT US", "CONTACT", "BLOG"]
+  const links = ["HOME", "SERVICES", "ABOUT US", "PROJECTS", "CONTACT"]
 
   // Sticky shadow on scroll
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 10)
+      
+      // Update active link based on scroll position
+      const sections = ["home", "services", "about", "projects", "contact"]
+      for (let section of sections) {
+        const element = document.getElementById(section)
+        if (element) {
+          const rect = element.getBoundingClientRect()
+          if (rect.top <= 150 && rect.bottom >= 150) {
+            const linkName = section === "about" ? "ABOUT US" : section === "projects" ? "PROJECTS" : section.toUpperCase()
+            setActive(linkName)
+            break
+          }
+        }
+      }
     }
     window.addEventListener("scroll", handleScroll)
     return () => window.removeEventListener("scroll", handleScroll)
@@ -53,7 +67,14 @@ const NavBar = () => {
             {links.map((item) => (
               <button
                 key={item}
-                onClick={() => setActive(item)}
+                onClick={() => {
+                  setActive(item)
+                  const sectionId = item === "ABOUT US" ? "about" : item === "PROJECTS" ? "projects" : item.toLowerCase()
+                  const element = document.getElementById(sectionId)
+                  if (element) {
+                    element.scrollIntoView({ behavior: "smooth", block: "start" })
+                  }
+                }}
                 className="relative"
               >
                 {item}
@@ -117,6 +138,11 @@ const NavBar = () => {
                   onClick={() => {
                     setActive(item)
                     setOpen(false)
+                    const sectionId = item === "ABOUT US" ? "about" : item === "PROJECTS" ? "projects" : item.toLowerCase()
+                    const element = document.getElementById(sectionId)
+                    if (element) {
+                      element.scrollIntoView({ behavior: "smooth", block: "start" })
+                    }
                   }}
                   className={`text-left ${
                     active === item ? "text-[#fbbf24]" : "text-black"
