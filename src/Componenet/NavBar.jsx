@@ -8,7 +8,15 @@ const NavBar = () => {
 
   const links = ["HOME", "SERVICES", "ABOUT US", "PROJECTS", "CONTACT"]
 
-  // Sticky shadow on scroll
+  const scrollToSection = (item) => {
+    const sectionId = item === "ABOUT US" ? "about" : item === "PROJECTS" ? "projects" : item.toLowerCase()
+    const element = document.getElementById(sectionId)
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth", block: "start" })
+    }
+  }
+
+  // Sticky shadow on scroll and update active link
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 10)
@@ -27,9 +35,26 @@ const NavBar = () => {
         }
       }
     }
-    window.addEventListener("scroll", handleScroll)
+    
+    window.addEventListener("scroll", handleScroll, { passive: true })
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
+
+  // Handle body overflow when menu is open
+  useEffect(() => {
+    if (open) {
+      document.body.style.overflow = "hidden"
+      document.documentElement.style.overflow = "hidden"
+    } else {
+      document.body.style.overflow = "auto"
+      document.documentElement.style.overflow = "auto"
+    }
+    
+    return () => {
+      document.body.style.overflow = "auto"
+      document.documentElement.style.overflow = "auto"
+    }
+  }, [open])
 
   return (
     <>
@@ -41,7 +66,7 @@ const NavBar = () => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setOpen(false)}
-            className="fixed inset-0 bg-black/30 backdrop-blur-sm md:hidden z-40"
+            className="fixed inset-0 bg-black/30 backdrop-blur-sm md:hidden z-40 pointer-events-auto"
           />
         )}
       </AnimatePresence>
@@ -69,11 +94,7 @@ const NavBar = () => {
                 key={item}
                 onClick={() => {
                   setActive(item)
-                  const sectionId = item === "ABOUT US" ? "about" : item === "PROJECTS" ? "projects" : item.toLowerCase()
-                  const element = document.getElementById(sectionId)
-                  if (element) {
-                    element.scrollIntoView({ behavior: "smooth", block: "start" })
-                  }
+                  scrollToSection(item)
                 }}
                 className="relative"
               >
@@ -138,11 +159,7 @@ const NavBar = () => {
                   onClick={() => {
                     setActive(item)
                     setOpen(false)
-                    const sectionId = item === "ABOUT US" ? "about" : item === "PROJECTS" ? "projects" : item.toLowerCase()
-                    const element = document.getElementById(sectionId)
-                    if (element) {
-                      element.scrollIntoView({ behavior: "smooth", block: "start" })
-                    }
+                    scrollToSection(item)
                   }}
                   className={`text-left ${
                     active === item ? "text-[#fbbf24]" : "text-black"
